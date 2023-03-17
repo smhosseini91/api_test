@@ -201,7 +201,7 @@ def check_usage(request, rate):
     }
 
 
-def request_ratelimit(rate='100/h'):
+def request_ratelimit(rate=settings.REQUEST_RATE_LIMIT):
     def decorator(fn):
         @wraps(fn)
         def _wrapped(request, *args, **kw):
@@ -222,7 +222,7 @@ def request_ratelimit(rate='100/h'):
     return decorator
 
 
-def bad_request_ratelimit(rate='15/h', methods='GET'):
+def bad_request_ratelimit(rate=settings.BAD_REQUEST_RATE_LIMIT, methods='GET'):
     def decorator(fn):
         @wraps(fn)
         def _wrapped(request, *args, **kw):
