@@ -1,9 +1,10 @@
+from django.conf import settings
 from django.db.models import Sum as DbSum
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from api_test.authentication import ajax_login_required
-from api_test.ratelimit import request_ratelimit, bad_request_ratelimit
+from api_test.ratelimit import request_ratelimit, bad_request_ratelimit, check_bad_requests
 
 from .models import Set
 
@@ -16,8 +17,10 @@ def get_sum(request):
         num_a = int(request.GET.get('a'))
         num_b = int(request.GET.get('b'))
     except ValueError:
+        check_bad_requests(request, settings.BAD_REQUEST_RATE_LIMIT, 'Wrong Parameters')
         return JsonResponse("a and b should be provided as Integer values.", status=400, safe=False)
     except TypeError:
+        check_bad_requests(request, settings.BAD_REQUEST_RATE_LIMIT, 'Wrong Parameters')
         return JsonResponse("a and b numbers should be provided.", status=400, safe=False)
 
     created_set = Set.objects.create(num_a=num_a, num_b=num_b, sum=num_a + num_b)
