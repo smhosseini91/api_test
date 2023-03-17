@@ -8,3 +8,6 @@ class Set(models.Model):
 
     class Meta:
         db_table = "sets"
+
+    def __str__(self):
+        return f'{self.num_b} + {self.num_b} = {self.sum}'
