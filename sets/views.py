@@ -1,3 +1,4 @@
+from django.db.models import Sum as DbSum
 from django.http import JsonResponse
 from django.views import View
 from .models import Set
@@ -25,3 +26,12 @@ class History(View):
         sets = Set.objects.all()
 
         return JsonResponse([set_item.to_dict() for set_item in sets], safe=False)
+
+
+class Total(View):
+    def get(self, request):
+
+        total = Set.objects.aggregate(DbSum('sum'))
+
+        return JsonResponse({'total': total['sum__sum']})
+
