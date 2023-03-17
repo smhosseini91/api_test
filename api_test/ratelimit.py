@@ -9,7 +9,8 @@ from functools import wraps
 
 from django.conf import settings
 from django.core.cache import caches
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from django.core.exceptions import ImproperlyConfigured
+from django.http import JsonResponse
 from django.utils.module_loading import import_string
 
 
@@ -206,11 +207,15 @@ def request_ratelimit(rate='100/h'):
         def _wrapped(request, *args, **kw):
             old_limited = getattr(request, 'limited', False)
             if old_limited:
-                raise PermissionDenied('Sorry you are blocked!')
+                return JsonResponse('Access limited', status=429, safe=False)
 
             limit_status = check_usage(request, rate)
             if limit_status['should_limit']:
-                raise PermissionDenied(f'Sorry you are blocked for {limit_status["time_left"]} seconds!')
+                return JsonResponse(
+                    f'Too many requests; Retry after {limit_status["time_left"]} seconds!',
+                    status=429,
+                    safe=False,
+                )
 
             return fn(request, *args, **kw)
         return _wrapped
@@ -223,11 +228,15 @@ def bad_request_ratelimit(rate='15/h', methods='GET'):
         def _wrapped(request, *args, **kw):
             old_limited = getattr(request, 'limited', False)
             if old_limited:
-                raise PermissionDenied('Sorry you are blocked!')
+                return JsonResponse('Access limited', status=429, safe=False)
 
             limit_status = check_bad_requests(request, rate, methods)
             if limit_status['should_limit']:
-                raise PermissionDenied(f'Sorry you are blocked for {limit_status["time_left"]} seconds!')
+                return JsonResponse(
+                    f'Too many bad requests; Retry after {limit_status["time_left"]} seconds!',
+                    status=429,
+                    safe=False,
+                )
 
             return fn(request, *args, **kw)
         return _wrapped
