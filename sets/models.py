@@ -11,3 +11,9 @@ class Set(models.Model):
 
     def __str__(self):
         return f'{self.num_b} + {self.num_b} = {self.sum}'
+
+    def to_dict(self):
+        return {
+            'a': self.num_a,
+            'b': self.num_b,
+        }

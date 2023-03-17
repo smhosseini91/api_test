@@ -19,3 +19,9 @@ class Sum(View):
         return JsonResponse({'result': created_set.sum})
 
 
+class History(View):
+    def get(self, request):
+
+        sets = Set.objects.all()
+
+        return JsonResponse([set_item.to_dict() for set_item in sets], safe=False)
