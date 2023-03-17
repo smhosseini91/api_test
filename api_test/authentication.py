@@ -1,7 +1,7 @@
+import functools
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
-from django.contrib.auth.mixins import AccessMixin
-from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
 
 
 class AuthenticationBackend(ModelBackend):
@@ -15,10 +15,12 @@ class AuthenticationBackend(ModelBackend):
             return super().authenticate(request.username, password, **kwargs)
 
 
-class LoginRequiredMixin(AccessMixin):
-    """Verify that the current user is authenticated."""
+def ajax_login_required(view_func):
+    @functools.wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return view_func(request, *args, **kwargs)
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            raise PermissionDenied("Authentication Failed!")
-        return super().dispatch(request, *args, **kwargs)
+        return JsonResponse('Unauthorized Access', status=401, safe=False)
+
+    return wrapper

@@ -1,8 +1,9 @@
 from django.db.models import Sum as DbSum
 from django.http import JsonResponse
-
-from api_test.ratelimit import request_ratelimit, bad_request_ratelimit
 from django.views.decorators.csrf import csrf_exempt
+
+from api_test.authentication import ajax_login_required
+from api_test.ratelimit import request_ratelimit, bad_request_ratelimit
 
 from .models import Set
 
@@ -24,6 +25,7 @@ def get_sum(request):
 
 
 @csrf_exempt
+@ajax_login_required
 @request_ratelimit()
 @bad_request_ratelimit()
 def get_history(request):
@@ -33,6 +35,7 @@ def get_history(request):
 
 
 @csrf_exempt
+@ajax_login_required
 @request_ratelimit()
 @bad_request_ratelimit()
 def get_total(request):
