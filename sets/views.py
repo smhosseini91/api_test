@@ -14,6 +14,8 @@ class Sum(View):
         except TypeError:
             raise ValueError("a and b numbers should be provided.")
 
-        Set.objects.create(num_a=num_a, num_b=num_b)
+        created_set = Set.objects.create(num_a=num_a, num_b=num_b, sum=num_a + num_b)
 
-        return JsonResponse({'result': num_a + num_b})
+        return JsonResponse({'result': created_set.sum})
+
+
