@@ -16,9 +16,9 @@ def get_sum(request):
         num_a = int(request.GET.get('a'))
         num_b = int(request.GET.get('b'))
     except ValueError:
-        raise ValueError("a and b should be provided as Integer values.")
+        return JsonResponse("a and b should be provided as Integer values.", status=400, safe=False)
     except TypeError:
-        raise ValueError("a and b numbers should be provided.")
+        return JsonResponse("a and b numbers should be provided.", status=400, safe=False)
 
     created_set = Set.objects.create(num_a=num_a, num_b=num_b, sum=num_a + num_b)
     return JsonResponse({'result': created_set.sum})
