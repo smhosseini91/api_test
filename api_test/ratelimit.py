@@ -200,7 +200,7 @@ def check_usage(request, rate):
     }
 
 
-def request_ratelimit(rate):
+def request_ratelimit(rate='100/h'):
     def decorator(fn):
         @wraps(fn)
         def _wrapped(request, *args, **kw):
