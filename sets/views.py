@@ -6,34 +6,29 @@ from api_test.authentication import LoginRequiredMixin
 
 from .models import Set
 
-class Sum(View):
-    def get(self, request):
 
-        try:
-            num_a = int(request.GET.get('a'))
-            num_b = int(request.GET.get('b'))
-        except ValueError:
-            raise ValueError("a and b should be provided as Integer values.")
-        except TypeError:
-            raise ValueError("a and b numbers should be provided.")
+def get_sum(request):
 
-        created_set = Set.objects.create(num_a=num_a, num_b=num_b, sum=num_a + num_b)
+    try:
+        num_a = int(request.GET.get('a'))
+        num_b = int(request.GET.get('b'))
+    except ValueError:
+        raise ValueError("a and b should be provided as Integer values.")
+    except TypeError:
+        raise ValueError("a and b numbers should be provided.")
 
-        return JsonResponse({'result': created_set.sum})
-
-
-class History(LoginRequiredMixin, View):
-    def get(self, request):
-
-        sets = Set.objects.all()
-
-        return JsonResponse([set_item.to_dict() for set_item in sets], safe=False)
+    created_set = Set.objects.create(num_a=num_a, num_b=num_b, sum=num_a + num_b)
+    return JsonResponse({'result': created_set.sum})
 
 
-class Total(LoginRequiredMixin, View):
-    def get(self, request):
+def get_history(request):
 
-        total = Set.objects.aggregate(DbSum('sum'))
+    sets = Set.objects.all()
+    return JsonResponse([set_item.to_dict() for set_item in sets], safe=False)
 
-        return JsonResponse({'total': total['sum__sum']})
+
+def get_total(self, request):
+
+    total = Set.objects.aggregate(DbSum('sum'))
+    return JsonResponse({'total': total['sum__sum']})
 
