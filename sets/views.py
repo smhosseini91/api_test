@@ -1,8 +1,10 @@
 from django.db.models import Sum as DbSum
 from django.http import JsonResponse
 from django.views import View
-from .models import Set
 
+from api_test.authentication import LoginRequiredMixin
+
+from .models import Set
 
 class Sum(View):
     def get(self, request):
@@ -20,7 +22,7 @@ class Sum(View):
         return JsonResponse({'result': created_set.sum})
 
 
-class History(View):
+class History(LoginRequiredMixin, View):
     def get(self, request):
 
         sets = Set.objects.all()
@@ -28,7 +30,7 @@ class History(View):
         return JsonResponse([set_item.to_dict() for set_item in sets], safe=False)
 
 
-class Total(View):
+class Total(LoginRequiredMixin, View):
     def get(self, request):
 
         total = Set.objects.aggregate(DbSum('sum'))
